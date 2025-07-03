@@ -1,0 +1,12 @@
+export const CONTRACT_ADDRESS = "0x58C73e52Ed763FFF530eDB121E8da1886d484e5d";
+export const CONTRACT_ABI = [
+  "function pool() view returns (uint256)",
+  "function smash() payable",
+  "function steal() payable",
+  "function lastWinner() view returns (address)",
+  "function lastWinAmount() view returns (uint256)",
+  "function getHallOfFame() view returns (address[])",
+  "function baseWinPercent() view returns (uint256)",
+  "function maxWinPercent() view returns (uint256)",
+  "function getStats(address) view returns (uint256 numWins, uint256 totalWins, uint256 failStreak)"
+];
