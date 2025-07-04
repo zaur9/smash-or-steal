@@ -16,6 +16,8 @@ export default defineConfig([
       reactRefresh.configs.vite,
       tseslint.configs.recommended,
       prettier,
+      'plugin:prettier/recommended',
+      'plugin:import/recommended',
     ],
     languageOptions: {
       ecmaVersion: 2020,

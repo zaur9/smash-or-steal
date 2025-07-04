@@ -9,8 +9,7 @@ interface ConfettiItemProps {
   duration: number;
 }
 
-// Types for ConfettiItem props
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 const StyledConfettiItem = ConfettiItem as React.ComponentType<any>;
 
 const confettiArray: ConfettiItemProps[] = Array.from({ length: 22 }, (_, i) => ({

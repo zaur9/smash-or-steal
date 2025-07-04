@@ -31,7 +31,7 @@ const HallOfFame: React.FC<HallOfFameProps> = ({ hallOfFame, myAddress }) => {
           marginBottom: 10,
         }}
       >
-        {/* <span style={{ fontSize: '1.25em', marginRight: 6, color: '#232946' }}>🏆</span> */}
+
         <span
           style={{
             fontWeight: 700,

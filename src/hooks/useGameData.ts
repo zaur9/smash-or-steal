@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ethers, JsonRpcSigner } from 'ethers';
-import { ContractService } from './contractService';
+import { ContractService } from '../services/contractService';
 
 export function useGameData(
   contract: ethers.Contract | null,
