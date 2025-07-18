@@ -1,8 +1,6 @@
 import React from "react";
 import Spinner from "./Spinner";
 import ProgressBar from "./ProgressBar";
-import HallOfFame from './HallOfFame';
-import { CONTRACT_ADDRESS } from "../utils/contract";
 import styled, { keyframes } from 'styled-components';
 
 const GlassCard = styled.div`
@@ -199,6 +197,7 @@ const GameInterface: React.FC<GameInterfaceProps> = ({
         flexDirection: 'column',
         alignItems: 'center',
         marginBottom: 44,
+        marginTop: -30,
       }}>
         <div
           style={{
@@ -221,7 +220,7 @@ const GameInterface: React.FC<GameInterfaceProps> = ({
           <span style={{ fontWeight: 900 }}>Steal</span>
         </div>
       </div>
-      <GlassBlock style={{ marginBottom: 44 }}>
+      <GlassBlock style={{ marginBottom: 44, marginTop: -80 }}>
         <div style={{ fontSize: '1.15em', fontWeight: 700, color: '#18122B', marginBottom: 10 }}>Game pool</div>
         <div style={{ fontSize: '2em', color: '#18122B', fontWeight: 800, marginBottom: 16 }}>{pool} STT</div>
         <div style={{ margin: '0 0 0 0' }}>
@@ -247,9 +246,6 @@ const GameInterface: React.FC<GameInterfaceProps> = ({
           : (status === 'Failed to load game data. Please check your connection or try again.' ? null : status)
         }
       </StatusText>
-      <HallOfFameBlock>
-        <HallOfFame hallOfFame={hallOfFame.slice(0, 10)} myAddress={myAddress} />
-      </HallOfFameBlock>
     </ResponsiveGlassCard>
   );
 };

@@ -2,6 +2,7 @@ import React from "react";
 import styled from 'styled-components';
 import { CONTRACT_ADDRESS } from "../utils/contract";
 import { GlassCard, GradientButton, ButtonText } from '../styles/StyledBlocks';
+import { WalletConnectButton } from './WalletConnectButton';
 
 const Description = styled.div`
   color: #b48aff;
@@ -74,9 +75,7 @@ const StartScreen: React.FC<{ onConnect?: () => void }> = ({ onConnect }) => {
         Fortune favors the fearless, but one wrong move and you lose it all.<br/>
         Only the bravest make it to the Hall of Fame!
       </div>
-      <GradientButton style={{ width: '100%', maxWidth: 260, minHeight: 54, fontSize: '1.18em', margin: '0 0 0 0' }} onClick={onConnect}>
-        <ButtonText>Connect MetaMask</ButtonText>
-      </GradientButton>
+      <WalletConnectButton />
     </GlassCard>
   );
 };

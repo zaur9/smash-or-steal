@@ -5,19 +5,123 @@ import GameInterface from "./components/GameInterface";
 import StartScreen from "./components/StartScreen";
 import Toast from "./components/Toast";
 import Footer from "./components/Footer";
-import { GradientButton, ButtonText } from "./styles/StyledBlocks";
+import TopLeftLeaderboard from "./components/TopLeftLeaderboard";
+import TopLeftHallOfFame from "./components/TopLeftHallOfFame";
 import { useGameData } from './hooks/useGameData';
 import GlassGlobalStyle from './styles/GlassGlobalStyle';
 import {
-  GlassCard,
-  GlassWallet,
   GlassNetworkWarning,
   ResponsiveGlassCard,
   GlassCenter
 } from './styles/AppBlocks';
 import { shortAddress } from './utils/shortAddress';
-import { toastMessages, getToastMessage } from './utils/toastMessages';
-import { useWallet } from './hooks/useWallet';
+import { getToastMessage } from './utils/toastMessages';
+import { useWalletV2 } from './hooks/useWalletV2';
+import styled from 'styled-components';
+
+// Контейнер для кнопок в левом верхнем углу
+const TopLeftButtonsContainer = styled.div`
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+  
+  @media (max-width: 768px) {
+    left: 10px;
+    gap: 8px;
+  }
+`;
+
+// Кнопка для левого верхнего угла
+const TopLeftButton = styled.button`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  padding: 12px 16px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 10px 12px;
+    font-size: 0.8em;
+  }
+`;
+
+// Кнопка кошелька в правом верхнем углу
+const WalletButton = styled(TopLeftButton)`
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  z-index: 1000;
+  
+  span:first-child {
+    font-size: 0.9em;
+    font-weight: 700;
+  }
+  
+  span:last-child {
+    font-size: 0.75em;
+    opacity: 0.8;
+    font-weight: 400;
+  }
+  
+  @media (max-width: 768px) {
+    right: 10px;
+    padding: 8px 12px;
+  }
+`;
+
+// Выпадающее меню для кошелька
+const WalletDropdown = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+  border-radius: 8px;
+  padding: 8px;
+  margin-top: 4px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 10001;
+  
+  button {
+    width: 100%;
+    background: none;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+`;
 
 // Для поддержки window.ethereum
 interface EthereumProvider extends Record<string, unknown> {
@@ -39,6 +143,9 @@ const App: React.FC = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [showDisconnectMenu, setShowDisconnectMenu] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showHallOfFame, setShowHallOfFame] = useState(false);
+  const [lastTransactionHash, setLastTransactionHash] = useState<string | null>(null);
   const disconnectMenuRef = useRef<HTMLDivElement | null>(null);
 
   const showToast = (msgKey: string, type: 'success' | 'error' | 'info' = 'info') => {
@@ -54,7 +161,7 @@ const App: React.FC = () => {
     connectWallet,
     disconnectWallet,
     setNetworkWarning
-  } = useWallet(showToast);
+  } = useWalletV2(showToast);
 
   const {
     pool,
@@ -114,6 +221,12 @@ const App: React.FC = () => {
       showToast("txSent", 'info');
       await tx.wait();
       await fetchData();
+      
+      // Обновляем лидербоард только если это новая транзакция
+      if (tx.hash !== lastTransactionHash) {
+        setLastTransactionHash(tx.hash);
+        // Простой лидербоард не нуждается в принудительном обновлении
+      }
 
       if (myAddress && lastWinner && myAddress.toLowerCase() === lastWinner.toLowerCase()) {
         setStatus("Success! You smashed the pool.");
@@ -158,6 +271,13 @@ const App: React.FC = () => {
       setStatus("Steal attempt finished!");
       showToast("stealFinished", 'success');
       await fetchData();
+      
+      // Обновляем лидербоард только если это новая транзакция
+      if (tx.hash !== lastTransactionHash) {
+        setLastTransactionHash(tx.hash);
+        // Простой лидербоард не нуждается в принудительном обновлении
+      }
+      
       if (myAddress && lastWinner && myAddress.toLowerCase() === lastWinner.toLowerCase()) {
         setTimeout(() => setShowConfetti(false), 2800);
       }
@@ -191,32 +311,9 @@ const App: React.FC = () => {
     <>
       <GlassGlobalStyle />
 
-      {myAddress && (
-        <GlassWallet
-          onClick={() => setShowDisconnectMenu(v => !v)}
-          aria-label="Wallet menu"
-          title="Wallet menu"
-        >
-          <span style={{ color: '#222', fontWeight: 700 }}>{shortAddress(myAddress)}</span>
-          <span style={{ color: '#555', fontWeight: 400, fontSize: '0.98em' }}>{userBalance !== undefined && userBalance !== null ? `${userBalance} STT` : '0 STT'}</span>
-
-          {showDisconnectMenu && (
-            <GradientButton
-              style={{ minWidth: 180, width: '98%', maxWidth: 260, zIndex: 10001 }}
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.stopPropagation();
-                setShowDisconnectMenu(false);
-                handleDisconnect();
-              }}
-            >
-              <ButtonText style={{ color: '#e53935' }}>Disconnect</ButtonText>
-            </GradientButton>
-          )}
-        </GlassWallet>
-      )}
-
       <GlassCenter>
-        <ResponsiveGlassCard>
+        <div style={{ paddingTop: '20px' }}> {/* Отступ сверху для кнопки */}
+          <ResponsiveGlassCard>
           {walletConnected
             ? (!hasLoadedOnce && isInitializing)
               ? <div style={{textAlign:'center',marginTop:60,fontSize:'1.3em'}}>Loading game data...</div>
@@ -234,9 +331,11 @@ const App: React.FC = () => {
                   userBalance={userBalance}
                   currentChance={currentChance}
                 />
-            : <StartScreen onConnect={connectWallet} />
+            : <StartScreen />
           }
         </ResponsiveGlassCard>
+        </div> {/* Закрывающий тег для div с отступом */}
+        
         {networkWarning && (
           <GlassNetworkWarning>
             {networkWarning}
@@ -245,6 +344,53 @@ const App: React.FC = () => {
       </GlassCenter>
       {toastMsg && <Toast type={toastMsg.type}>{toastMsg.text}</Toast>}
       <Footer />
+
+      {/* Кнопка кошелька в правом верхнем углу */}
+      {walletConnected && (
+        <WalletButton onClick={() => setShowDisconnectMenu(v => !v)}>
+          <span>{shortAddress(myAddress)}</span>
+          <span>{userBalance !== undefined && userBalance !== null ? `${userBalance} STT` : '0 STT'}</span>
+          {showDisconnectMenu && (
+            <WalletDropdown>
+              <button onClick={(e) => {
+                e.stopPropagation();
+                setShowDisconnectMenu(false);
+                handleDisconnect();
+              }}>
+                Disconnect
+              </button>
+            </WalletDropdown>
+          )}
+        </WalletButton>
+      )}
+
+      {/* Кнопки в левом верхнем углу */}
+      {walletConnected && (
+        <TopLeftButtonsContainer>
+          <TopLeftButton onClick={() => setShowLeaderboard(v => !v)}>
+            {showLeaderboard ? 'Close' : 'Top Players'}
+          </TopLeftButton>
+          <TopLeftButton onClick={() => setShowHallOfFame(v => !v)}>
+            {showHallOfFame ? 'Close' : 'Hall of Fame'}
+          </TopLeftButton>
+        </TopLeftButtonsContainer>
+      )}
+
+      {/* Отображение лидербоарда */}
+      {walletConnected && hasLoadedOnce && showLeaderboard && (
+        <TopLeftLeaderboard 
+          contract={contract} 
+          currentPlayerAddress={myAddress}
+        />
+      )}
+
+      {/* Отображение Hall of Fame */}
+      {walletConnected && hasLoadedOnce && showHallOfFame && (
+        <TopLeftHallOfFame 
+          hallOfFame={hallOfFame} 
+          myAddress={myAddress}
+        />
+      )}
     </>
   );
 };
