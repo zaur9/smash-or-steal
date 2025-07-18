@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 
 import { ethers } from "ethers";
 import GameInterface from "./components/GameInterface";
@@ -307,6 +307,35 @@ const App: React.FC = () => {
     disconnectWallet();
   };
 
+  // Мемоизируем GameInterface для предотвращения лишних рендеров
+  const memoizedGameInterface = useMemo(() => (
+    <GameInterface
+      pool={pool}
+      lastWinner={lastWinner}
+      lastWinAmount={lastWinAmount}
+      status={status}
+      myAddress={myAddress}
+      isActionLoading={isActionLoading}
+      onSmash={handleSmash}
+      onSteal={handleSteal}
+      userBalance={userBalance}
+      currentChance={currentChance}
+      hallOfFame={hallOfFame}
+      isFetching={isFetching}
+    />
+  ), [
+    pool,
+    lastWinner,
+    lastWinAmount,
+    status,
+    myAddress,
+    isActionLoading,
+    userBalance,
+    currentChance,
+    hallOfFame,
+    isFetching
+  ]);
+
   return (
     <>
       <GlassGlobalStyle />
@@ -317,20 +346,7 @@ const App: React.FC = () => {
           {walletConnected
             ? (!hasLoadedOnce && isInitializing)
               ? <div style={{textAlign:'center',marginTop:60,fontSize:'1.3em'}}>Loading game data...</div>
-              : <GameInterface
-                  pool={pool}
-                  onSmash={handleSmash}
-                  onSteal={handleSteal}
-                  status={status}
-                  lastWinner={lastWinner}
-                  lastWinAmount={lastWinAmount}
-                  hallOfFame={hallOfFame}
-                  isActionLoading={isActionLoading}
-                  isFetching={isFetching}
-                  myAddress={myAddress}
-                  userBalance={userBalance}
-                  currentChance={currentChance}
-                />
+              : memoizedGameInterface
             : <StartScreen />
           }
         </ResponsiveGlassCard>

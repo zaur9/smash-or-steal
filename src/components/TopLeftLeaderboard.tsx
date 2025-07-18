@@ -192,12 +192,13 @@ const TopLeftLeaderboard: React.FC<TopLeftLeaderboardProps> = ({ contract, curre
     }
   }, [contract, currentPlayerAddress]);
 
-  // Автоматическая загрузка при открытии
+  // Автоматическая загрузка при открытии (убираем автозагрузку)
   useEffect(() => {
-    if (contract && !hasLoaded) {
+    // Загружаем только при первом рендере, если еще не загружали
+    if (contract && !hasLoaded && !isLoading) {
       loadLeaderboard();
     }
-  }, [contract, hasLoaded, loadLeaderboard]);
+  }, [contract, hasLoaded, isLoading, loadLeaderboard]);
 
   return (
     <LeaderboardContainer>
