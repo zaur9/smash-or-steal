@@ -3,8 +3,7 @@ export const toastMessages = {
   walletConnected: "Wallet connected!",
   walletFailed: "Wallet connection failed or was rejected.",
   txSent: "Transaction sent! Waiting...",
-  smashSuccess: "SMASH! Success",
-  smashFailed: "Smash failed",
+  stealSuccess: "STEAL! Success! 🎉",
   stealTry: "Trying to Steal...",
   stealFinished: "Steal finished",
   stealFailed: "Steal failed"

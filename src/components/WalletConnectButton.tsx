@@ -1,6 +1,39 @@
 import React from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { GradientButton, ButtonText } from '../styles/StyledBlocks';
+import styled from 'styled-components';
+
+const CyberpunkButton = styled.button`
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid #00ffff;
+  border-radius: 8px;
+  color: #00ffff;
+  padding: 15px 30px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 10px #00ffff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  font-family: 'Montserrat', sans-serif;
+  
+  &:hover {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    border-color: #ff00ff;
+    color: #ff00ff;
+    text-shadow: 0 0 15px #ff00ff;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+    transform: translateY(-2px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  @media (max-width: 600px) {
+    padding: 12px 24px;
+    font-size: 1em;
+  }
+`;
 
 interface WalletConnectButtonProps {
   className?: string;
@@ -42,60 +75,56 @@ export const WalletConnectButton: React.FC<WalletConnectButtonProps> = ({ classN
             {(() => {
               if (!connected) {
                 return (
-                  <GradientButton onClick={openConnectModal} type="button">
-                    <ButtonText>Connect Wallet</ButtonText>
-                  </GradientButton>
+                  <CyberpunkButton onClick={openConnectModal} type="button">
+                    Connect Wallet
+                  </CyberpunkButton>
                 );
               }
 
               if (chain.unsupported) {
                 return (
-                  <GradientButton onClick={openChainModal} type="button">
-                    <ButtonText>Wrong network</ButtonText>
-                  </GradientButton>
+                  <CyberpunkButton onClick={openChainModal} type="button">
+                    Wrong network
+                  </CyberpunkButton>
                 );
               }
 
               return (
                 <div style={{ display: 'flex', gap: 12 }}>
-                  <GradientButton
+                  <CyberpunkButton
                     onClick={openChainModal}
                     style={{ display: 'flex', alignItems: 'center' }}
                     type="button"
                   >
-                    <ButtonText>
-                      {chain.hasIcon && (
-                        <div
-                          style={{
-                            background: chain.iconBackground,
-                            width: 12,
-                            height: 12,
-                            borderRadius: 999,
-                            overflow: 'hidden',
-                            marginRight: 4,
-                          }}
-                        >
-                          {chain.iconUrl && (
-                            <img
-                              alt={chain.name ?? 'Chain icon'}
-                              src={chain.iconUrl}
-                              style={{ width: 12, height: 12 }}
-                            />
-                          )}
-                        </div>
-                      )}
-                      {chain.name}
-                    </ButtonText>
-                  </GradientButton>
+                    {chain.hasIcon && (
+                      <div
+                        style={{
+                          background: chain.iconBackground,
+                          width: 12,
+                          height: 12,
+                          borderRadius: 999,
+                          overflow: 'hidden',
+                          marginRight: 4,
+                        }}
+                      >
+                        {chain.iconUrl && (
+                          <img
+                            alt={chain.name ?? 'Chain icon'}
+                            src={chain.iconUrl}
+                            style={{ width: 12, height: 12 }}
+                          />
+                        )}
+                      </div>
+                    )}
+                    {chain.name}
+                  </CyberpunkButton>
 
-                  <GradientButton onClick={openAccountModal} type="button">
-                    <ButtonText>
-                      {account.displayName}
-                      {account.displayBalance
-                        ? ` (${account.displayBalance})`
-                        : ''}
-                    </ButtonText>
-                  </GradientButton>
+                  <CyberpunkButton onClick={openAccountModal} type="button">
+                    {account.displayName}
+                    {account.displayBalance
+                      ? ` (${account.displayBalance})`
+                      : ''}
+                  </CyberpunkButton>
                 </div>
               );
             })()}

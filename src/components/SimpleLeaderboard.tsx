@@ -31,10 +31,10 @@ const Title = styled.h2`
 `;
 
 const LoadButton = styled.button`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid #00ffff;
   border-radius: 8px;
-  color: white;
+  color: #00ffff;
   padding: 12px 24px;
   font-size: 1em;
   font-weight: 600;
@@ -42,15 +42,25 @@ const LoadButton = styled.button`
   transition: all 0.3s ease;
   margin-bottom: 20px;
   width: 100%;
+  text-shadow: 0 0 10px #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
   
   &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    border-color: #ff00ff;
+    color: #ff00ff;
+    text-shadow: 0 0 15px #ff00ff;
+    box-shadow: 0 0 25px rgba(255, 0, 255, 0.4);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
   
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    border-color: #666;
+    color: #666;
+    text-shadow: none;
+    box-shadow: none;
   }
 `;
 
@@ -184,7 +194,7 @@ const SimpleLeaderboard: React.FC<SimpleLeaderboardProps> = ({ contract, current
 
   return (
     <SimpleLeaderboardContainer>
-      <Title>Top Players by Transactions</Title>
+      <Title>Top Transactions</Title>
       
       {!hasLoaded ? (
         <LoadButton onClick={loadLeaderboard} disabled={isLoading}>

@@ -32,10 +32,6 @@ export class ContractService {
     return Array.from(hof).slice(-10).reverse() as string[];
   }
 
-  async smash(): Promise<ethers.TransactionResponse> {
-    return await this.contract.smash({ value: ethers.parseEther('0.01') });
-  }
-
   async steal(): Promise<ethers.TransactionResponse> {
     return await this.contract.steal({ value: ethers.parseEther('0.01') });
   }
@@ -63,7 +59,7 @@ export class ContractService {
     };
   }
 
-  async getSTTBalance(address: string): Promise<string> {
+  async getSTTBalance(): Promise<string> {
     return '0';
   }
 
@@ -78,22 +74,18 @@ export class ContractService {
         const currentBlock = await this.provider.getBlockNumber();
         const fromBlock = Math.max(0, currentBlock - 50000); // Последние ~50k блоков
         
-        // Создаем фильтры для событий
-        const smashFilter = this.contract.filters.SmashAttempt?.(address);
+        // Get steal attempt events for this specific address
         const stealFilter = this.contract.filters.StealAttempt?.(address);
         
+        // If available, get events to calculate user attempts
         let totalEvents = 0;
-        
-        if (smashFilter) {
-          try {
-            const smashEvents = await this.contract.queryFilter(smashFilter, fromBlock, currentBlock);
-            totalEvents += smashEvents.length;
-          } catch (e) {
-            console.log('SmashAttempt events not available');
-          }
-        }
-        
         if (stealFilter) {
+            // Get recent events (last 1000 blocks)
+            const stealEvents = await this.contract.queryFilter(stealFilter, fromBlock, currentBlock);
+            totalEvents += stealEvents.length;
+        } else {
+            console.log('StealAttempt events not available');
+        }        if (stealFilter) {
           try {
             const stealEvents = await this.contract.queryFilter(stealFilter, fromBlock, currentBlock);
             totalEvents += stealEvents.length;

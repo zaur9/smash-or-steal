@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { ContractService } from '../services/contractService';
-import { shortAddress } from '../utils/shortAddress';
 
 const DebugContainer = styled.div`
   background: rgba(255, 255, 255, 0.1);
@@ -23,17 +22,25 @@ const DebugTitle = styled.h3`
 `;
 
 const DebugButton = styled.button`
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 8px 16px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid #00ffff;
   border-radius: 6px;
+  color: #00ffff;
+  padding: 8px 16px;
   cursor: pointer;
   margin: 4px;
   font-size: 0.8em;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 8px #00ffff;
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
   
   &:hover {
-    background: #0056b3;
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    border-color: #ff00ff;
+    color: #ff00ff;
+    text-shadow: 0 0 12px #ff00ff;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
   }
 `;
 
@@ -43,7 +50,7 @@ interface PlayerDebugProps {
 }
 
 const PlayerDebug: React.FC<PlayerDebugProps> = ({ contract, currentPlayerAddress }) => {
-  const [debugInfo, setDebugInfo] = useState<any>(null);
+  const [debugInfo, setDebugInfo] = useState<Record<string, unknown> | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchPlayerStats = async (address: string) => {

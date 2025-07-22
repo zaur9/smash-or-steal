@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { ethers } from "ethers";
 import GameInterface from "./components/GameInterface";
@@ -11,12 +11,11 @@ import { useGameData } from './hooks/useGameData';
 import GlassGlobalStyle from './styles/GlassGlobalStyle';
 import {
   GlassNetworkWarning,
-  ResponsiveGlassCard,
   GlassCenter
 } from './styles/AppBlocks';
 import { shortAddress } from './utils/shortAddress';
 import { getToastMessage } from './utils/toastMessages';
-import { useWalletV2 } from './hooks/useWalletV2';
+import { useWallet } from './hooks/useWallet';
 import styled from 'styled-components';
 
 // Контейнер для кнопок в левом верхнем углу
@@ -36,22 +35,25 @@ const TopLeftButtonsContainer = styled.div`
 
 // Кнопка для левого верхнего угла
 const TopLeftButton = styled.button`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  border-radius: 12px;
-  color: white;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid #00ffff;
+  border-radius: 8px;
+  color: #00ffff;
   padding: 12px 16px;
   font-size: 0.85em;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 0 10px #00ffff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
   
   &:hover {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    border-color: #ff00ff;
+    color: #ff00ff;
+    text-shadow: 0 0 15px #ff00ff;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   }
   
   &:active {
@@ -124,15 +126,9 @@ const WalletDropdown = styled.div`
 `;
 
 // Для поддержки window.ethereum
-interface EthereumProvider extends Record<string, unknown> {
-  isMetaMask?: boolean;
-  request?: (request: { method: string; params?: any[] | Record<string, any> }) => Promise<any>;
-  on?: (event: string, handler: (...args: unknown[]) => void) => void;
-  removeListener?: (event: string, handler: (...args: unknown[]) => void) => void;
-}
 declare global {
   interface Window {
-    ethereum?: EthereumProvider;
+    ethereum?: unknown;
   }
 }
 
@@ -140,7 +136,6 @@ declare global {
 
 const App: React.FC = () => {
   const [toastMsg, setToastMsg] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
-  const [showConfetti, setShowConfetti] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [showDisconnectMenu, setShowDisconnectMenu] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
@@ -158,36 +153,29 @@ const App: React.FC = () => {
     walletConnected,
     myAddress,
     networkWarning,
-    connectWallet,
     disconnectWallet,
     setNetworkWarning
-  } = useWalletV2(showToast);
+  } = useWallet(showToast);
 
   const {
     pool,
     lastWinner,
-    lastWinAmount,
     hallOfFame,
-    status,
-    isFetching,
     hasLoadedOnce,
     isInitializing,
     setStatus,
-
     fetchData,
     userBalance,
     currentChance,
   } = useGameData(contract, myAddress);
 
   useEffect(() => {
-
     if (contract) {
       fetchData();
     }
     if (window.ethereum && typeof window.ethereum.on === 'function') {
       const handleChainChanged = () => {
         setStatus('');
-        setShowConfetti(false);
         setNetworkWarning('Please switch to Somnia Testnet in MetaMask to continue playing.');
         showToast('Please switch to Somnia Testnet in MetaMask.', 'error');
       };
@@ -199,7 +187,7 @@ const App: React.FC = () => {
       };
     }
 
-  }, [contract]);
+    }, [contract, fetchData, setStatus, setNetworkWarning]);
 
   useEffect(() => {
     if (!showDisconnectMenu) return;
@@ -211,54 +199,6 @@ const App: React.FC = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showDisconnectMenu]);
-
-  const handleSmash = async () => {
-    if (!contract) return;
-    setIsActionLoading(true);
-    setStatus("Sending Smash...");
-    try {
-      const tx = await contract.smash({ value: ethers.parseEther("0.01") });
-      showToast("txSent", 'info');
-      await tx.wait();
-      await fetchData();
-      
-      // Обновляем лидербоард только если это новая транзакция
-      if (tx.hash !== lastTransactionHash) {
-        setLastTransactionHash(tx.hash);
-        // Простой лидербоард не нуждается в принудительном обновлении
-      }
-
-      if (myAddress && lastWinner && myAddress.toLowerCase() === lastWinner.toLowerCase()) {
-        setStatus("Success! You smashed the pool.");
-        showToast("smashSuccess", 'success');
-        setTimeout(() => setShowConfetti(false), 2800);
-      } else {
-        setStatus("Not lucky this time. The pool is growing");
-        showToast("Not lucky this time. The pool is growing", 'info');
-      }
-    } catch (e: any) {
-      const msg = typeof e?.message === 'string' ? e.message.toLowerCase() : '';
-      if (
-        e?.code === 4001 ||
-        msg.includes('user denied') ||
-        msg.includes('user rejected')
-      ) {
-        setStatus("Transaction cancelled by user.");
-        showToast("Transaction cancelled by user.", 'info');
-      } else if (
-        e?.code === 'CALL_EXCEPTION' ||
-        msg.includes('missing revert data')
-      ) {
-        setStatus("Transaction failed. Please check the game state and your balance.");
-        showToast("Transaction failed. Please check the game state and your balance.", 'error');
-      } else {
-        setStatus("Transaction failed.");
-        showToast("smashFailed", 'error');
-        console.error('Transaction error:', e);
-      }
-    }
-    setIsActionLoading(false);
-  };
 
   const handleSteal = async () => {
     if (!contract) return;
@@ -279,12 +219,13 @@ const App: React.FC = () => {
       }
       
       if (myAddress && lastWinner && myAddress.toLowerCase() === lastWinner.toLowerCase()) {
-        setTimeout(() => setShowConfetti(false), 2800);
+        // Winner animation could be handled here
       }
-    } catch (e: any) {
-      const msg = typeof e?.message === 'string' ? e.message.toLowerCase() : '';
+    } catch (e: unknown) {
+      const errorObj = e as { code?: number; message?: string };
+      const msg = typeof errorObj?.message === 'string' ? errorObj.message.toLowerCase() : '';
       if (
-        e?.code === 4001 ||
+        errorObj?.code === 4001 ||
         msg.includes('user denied') ||
         msg.includes('user rejected')
       ) {
@@ -303,38 +244,8 @@ const App: React.FC = () => {
 
   const handleDisconnect = () => {
     setStatus('');
-    setShowConfetti(false);
     disconnectWallet();
   };
-
-  // Мемоизируем GameInterface для предотвращения лишних рендеров
-  const memoizedGameInterface = useMemo(() => (
-    <GameInterface
-      pool={pool}
-      lastWinner={lastWinner}
-      lastWinAmount={lastWinAmount}
-      status={status}
-      myAddress={myAddress}
-      isActionLoading={isActionLoading}
-      onSmash={handleSmash}
-      onSteal={handleSteal}
-      userBalance={userBalance}
-      currentChance={currentChance}
-      hallOfFame={hallOfFame}
-      isFetching={isFetching}
-    />
-  ), [
-    pool,
-    lastWinner,
-    lastWinAmount,
-    status,
-    myAddress,
-    isActionLoading,
-    userBalance,
-    currentChance,
-    hallOfFame,
-    isFetching
-  ]);
 
   return (
     <>
@@ -342,14 +253,18 @@ const App: React.FC = () => {
 
       <GlassCenter>
         <div style={{ paddingTop: '20px' }}> {/* Отступ сверху для кнопки */}
-          <ResponsiveGlassCard>
           {walletConnected
             ? (!hasLoadedOnce && isInitializing)
               ? <div style={{textAlign:'center',marginTop:60,fontSize:'1.3em'}}>Loading game data...</div>
-              : memoizedGameInterface
+              : <GameInterface
+                  pool={pool}
+                  lastWinner={lastWinner}
+                  isActionLoading={isActionLoading}
+                  onSteal={handleSteal}
+                  currentChance={currentChance}
+                />
             : <StartScreen />
           }
-        </ResponsiveGlassCard>
         </div> {/* Закрывающий тег для div с отступом */}
         
         {networkWarning && (
@@ -383,10 +298,16 @@ const App: React.FC = () => {
       {/* Кнопки в левом верхнем углу */}
       {walletConnected && (
         <TopLeftButtonsContainer>
-          <TopLeftButton onClick={() => setShowLeaderboard(v => !v)}>
-            {showLeaderboard ? 'Close' : 'Top Players'}
+          <TopLeftButton onClick={() => {
+            setShowLeaderboard(v => !v);
+            if (!showLeaderboard) setShowHallOfFame(false); // Закрыть Hall of Fame при открытии Leaderboard
+          }}>
+            {showLeaderboard ? 'Close' : 'Top Transactions'}
           </TopLeftButton>
-          <TopLeftButton onClick={() => setShowHallOfFame(v => !v)}>
+          <TopLeftButton onClick={() => {
+            setShowHallOfFame(v => !v);
+            if (!showHallOfFame) setShowLeaderboard(false); // Закрыть Leaderboard при открытии Hall of Fame
+          }}>
             {showHallOfFame ? 'Close' : 'Hall of Fame'}
           </TopLeftButton>
         </TopLeftButtonsContainer>

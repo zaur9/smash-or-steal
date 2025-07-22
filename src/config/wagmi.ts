@@ -25,7 +25,7 @@ const somniaTestnet: Chain = {
 };
 
 export const config = getDefaultConfig({
-  appName: 'Smash or Steal',
+  appName: 'Steal',
   projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'b91b95236c2a89ed3a99b589d2666f90',
   chains: [somniaTestnet],
   ssr: false,

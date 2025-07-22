@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { ContractService } from '../services/contractService';
-import { PlayerStats, LeaderboardData } from '../types/leaderboard';
+import { LeaderboardData } from '../types/leaderboard';
 import { shortAddress } from '../utils/shortAddress';
 
 const LeaderboardContainer = styled.div`
@@ -107,15 +107,6 @@ const StatLabel = styled.div`
   color: #888;
 `;
 
-const LoadingSpinner = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100px;
-  color: #232946;
-  font-family: 'Montserrat', sans-serif;
-`;
-
 const EmptyState = styled.div`
   text-align: center;
   padding: 40px 20px;
@@ -124,25 +115,35 @@ const EmptyState = styled.div`
 `;
 
 const RefreshButton = styled.button`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid #00ffff;
   border-radius: 8px;
-  color: white;
+  color: #00ffff;
   padding: 8px 16px;
   font-size: 0.8em;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-bottom: 16px;
+  text-shadow: 0 0 10px #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
   
   &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    border-color: #ff00ff;
+    color: #ff00ff;
+    text-shadow: 0 0 15px #ff00ff;
+    box-shadow: 0 0 25px rgba(255, 0, 255, 0.4);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
   
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    border-color: #666;
+    color: #666;
+    text-shadow: none;
+    box-shadow: none;
   }
 `;
 
@@ -193,7 +194,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ contract, currentPlayerAddres
   // Загружаем данные только один раз при монтировании
   useEffect(() => {
     fetchLeaderboard();
-  }, []); // Убираем зависимости, чтобы не было лишних запросов
+  }, [fetchLeaderboard]);
 
   // Функция для ручного обновления
   const handleRefresh = useCallback(() => {
@@ -204,7 +205,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ contract, currentPlayerAddres
     return (
       <LeaderboardContainer>
         <Title>🏆 Transaction Leaderboard</Title>
-        <LoadingSpinner>Loading leaderboard...</LoadingSpinner>
+        <EmptyState>Loading leaderboard...</EmptyState>
       </LeaderboardContainer>
     );
   }

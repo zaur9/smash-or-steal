@@ -60,20 +60,26 @@ const CompactStats = styled.div`
 
 const ViewAllButton = styled.button`
   width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid #00ffff;
   border-radius: 8px;
-  color: white;
+  color: #00ffff;
   padding: 8px 12px;
   font-size: 0.8em;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 8px;
+  text-shadow: 0 0 10px #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
   
   &:hover {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    border-color: #ff00ff;
+    color: #ff00ff;
+    text-shadow: 0 0 15px #ff00ff;
+    box-shadow: 0 0 25px rgba(255, 0, 255, 0.4);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 `;
 
@@ -93,7 +99,7 @@ const CompactLeaderboard: React.FC<CompactLeaderboardProps> = ({
   return (
     <CompactContainer>
       <CompactTitle>
-        🏆 Top Players
+        🏆 Top Transactions
       </CompactTitle>
       
       {topThree.map((player) => (

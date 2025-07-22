@@ -1,69 +1,99 @@
-import { useState, useCallback } from 'react';
+import { useAccount, useConnect, useDisconnect, useWalletClient } from 'wagmi';
+import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from '../utils/contract';
 
-export function useWallet(showToast: (msg: string, type?: 'success' | 'error' | 'info') => void) {
-  const [signer, setSigner] = useState<ethers.Signer | null>(null);
+export function useWallet(showToast: (_msg: string, _type?: 'success' | 'error' | 'info') => void) {
+  const { address, isConnected, chainId } = useAccount();
+  const { connect, connectors } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { data: walletClient } = useWalletClient();
+  
   const [contract, setContract] = useState<ethers.Contract | null>(null);
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [myAddress, setMyAddress] = useState<string>("");
+  const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [networkWarning, setNetworkWarning] = useState<string | null>(null);
+  
   const REQUIRED_CHAIN_ID = 50312; // Somnia Testnet
 
-  const connectWallet = useCallback(async () => {
-    try {
-      if (!window.ethereum || typeof window.ethereum.request !== 'function') {
-        showToast("installMetaMask", 'error');
-        return;
-      }
-      const prov = new ethers.BrowserProvider(window.ethereum);
-      const network = await prov.getNetwork();
-      if (Number(network.chainId) !== REQUIRED_CHAIN_ID) {
-        setNetworkWarning('Please switch to Somnia Testnet in MetaMask.');
+  // Проверка сети и создание контракта
+  useEffect(() => {
+    if (isConnected && walletClient) {
+      // Проверяем сеть
+      if (chainId !== REQUIRED_CHAIN_ID) {
+        setNetworkWarning('Please switch to Somnia Testnet in your wallet.');
         showToast('You are not on the required Somnia Testnet!', 'error');
-        setWalletConnected(false);
-        setSigner(null);
         setContract(null);
+        setSigner(null);
         return;
       } else {
         setNetworkWarning(null);
       }
-      const signerInstance = await prov.getSigner();
-      const address = await signerInstance.getAddress();
-      setSigner(signerInstance);
-      setMyAddress(address);
-      setWalletConnected(true);
-      const contractInstance = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signerInstance);
-      setContract(contractInstance);
-      showToast("walletConnected", 'success');
-    } catch (e) {
-      showToast('walletFailed', 'error');
-      setWalletConnected(false);
-      setSigner(null);
-    }
-  }, [showToast]);
 
-  const disconnectWallet = useCallback(() => {
-    setWalletConnected(false);
-    setSigner(null);
+      // Создаем провайдер и signer
+      const provider = new ethers.BrowserProvider(walletClient);
+      
+      provider.getSigner().then(signerInstance => {
+        setSigner(signerInstance);
+        const contractInstance = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signerInstance);
+        setContract(contractInstance);
+      }).catch(error => {
+        console.error('Error creating signer:', error);
+        showToast('Failed to create wallet connection', 'error');
+      });
+    } else {
+      setContract(null);
+      setSigner(null);
+      setNetworkWarning(null);
+    }
+  }, [isConnected, walletClient, chainId, showToast]);
+
+  // Функция подключения кошелька (теперь показывает модальное окно RainbowKit)
+  const connectWallet = async () => {
+    try {
+      if (connectors.length > 0) {
+        // Подключаемся к первому доступному коннектору
+        // RainbowKit автоматически покажет модальное окно выбора кошелька
+        connect({ connector: connectors[0] });
+      } else {
+        showToast('No wallet connectors available', 'error');
+      }
+    } catch (error) {
+      console.error('Connection error:', error);
+      showToast('Failed to connect wallet', 'error');
+    }
+  };
+
+  // Функция отключения кошелька
+  const disconnectWallet = () => {
+    disconnect();
     setContract(null);
-    setMyAddress('');
-    setNetworkWarning('');
-    showToast('Disconnected', 'info');
-  }, [showToast]);
+    setSigner(null);
+    setNetworkWarning(null);
+    showToast('Wallet disconnected', 'info');
+  };
 
   return {
-    signer,
+    // Данные кошелька
+    walletConnected: isConnected,
+    myAddress: address || '',
+    chainId,
+    
+    // Контракт и подписант
     contract,
-    walletConnected,
-    myAddress,
-    networkWarning,
+    signer,
+    
+    // Функции управления
     connectWallet,
     disconnectWallet,
+    
+    // Состояние сети
+    networkWarning,
     setNetworkWarning,
-    setWalletConnected,
-    setSigner,
-    setContract,
-    setMyAddress
+    
+    // Дополнительные функции для обратной совместимости
+    setWalletConnected: () => {}, // Не используется с Wagmi
+    setSigner: () => {}, // Не используется с Wagmi
+    setContract: () => {}, // Не используется с Wagmi
+    setMyAddress: () => {}, // Не используется с Wagmi
   };
 }

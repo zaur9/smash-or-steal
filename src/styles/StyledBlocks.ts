@@ -1,13 +1,16 @@
 import styled, { keyframes } from "styled-components";
 
-/**
- * @typedef {Object} GradientButtonProps
- * @property {boolean} [$fullWidth]
- */
-
+// Только необходимые анимации
 export const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(30px) scale(0.98);}
-  to   { opacity: 1; transform: translateY(0) scale(1);}
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+export const toastShow = keyframes`
+  0% { opacity: 0; transform: translateY(30px);}
+  10% { opacity: 1; transform: translateY(0);}
+  90% { opacity: 1; transform: translateY(0);}
+  100% { opacity: 0; transform: translateY(-30px);}
 `;
 
 export const Center = styled.div`
@@ -16,45 +19,141 @@ export const Center = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 90px;
+  padding-top: 80px;
+  position: relative;
+  z-index: 2;
 `;
 
 export const TitleBlock = styled.div`
-  width: 920px;
-  max-width: 98vw;
-  background: linear-gradient(90deg, #270b45 40%, #2e1256 100%);
-  box-shadow: 0 10px 44px 0 #5500ff66;
-  border-radius: 60px 60px 38px 38px / 70px 70px 38px 38px;
-  padding: 44px 0 38px 0;
-  margin-bottom: -60px;
+  width: 900px;
+  max-width: 95vw;
+  background: 
+    linear-gradient(135deg, 
+      rgba(0, 255, 255, 0.1) 0%, 
+      rgba(255, 0, 255, 0.1) 50%, 
+      rgba(0, 255, 255, 0.1) 100%
+    );
+  backdrop-filter: blur(20px);
+  border: 2px solid;
+  border-image: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff) 1;
+  border-radius: 20px;
+  padding: 50px 0 40px 0;
+  margin-bottom: -40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 52px;
+  gap: 40px;
   position: relative;
   z-index: 2;
-  animation: ${fadeIn} 0.7s;
+  animation: ${fadeIn} 0.8s ease-out;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(0, 255, 255, 0.4), 
+      transparent
+    );
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0.3;
+    filter: blur(10px);
+  }
 `;
 
 export const BigTitle = styled.h1`
-  font-size: 5.2em;
-  background: linear-gradient(90deg, #f9b700, #ff2b75, #a900ff, #00e0ff);
+  font-size: 5.5em;
+  background: linear-gradient(45deg, #00ffff, #ff00ff, #00ff41, #ff00ff, #00ffff);
+  background-size: 400% 400%;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  font-family: 'Baloo 2', 'Montserrat', 'Segoe UI', Arial, sans-serif;
-  font-weight: 800;
-  letter-spacing: 2px;
+  font-family: 'Orbitron', 'Rajdhani', monospace;
+  font-weight: 900;
+  letter-spacing: 4px;
   margin: 0;
   text-align: center;
-  display: inline;
+  text-transform: uppercase;
+  position: relative;
+  animation: 
+    neonTextGlow 2s ease-in-out infinite alternate,
+    backgroundShift 3s ease-in-out infinite;
+  
+  @keyframes neonTextGlow {
+    from {
+      text-shadow: 
+        0 0 5px #00ffff,
+        0 0 10px #00ffff,
+        0 0 15px #00ffff,
+        0 0 20px #00ffff,
+        0 0 35px #ff00ff,
+        0 0 40px #ff00ff;
+    }
+    to {
+      text-shadow: 
+        0 0 2px #00ffff,
+        0 0 5px #00ffff,
+        0 0 8px #00ffff,
+        0 0 12px #00ffff,
+        0 0 18px #ff00ff,
+        0 0 25px #ff00ff;
+    }
+  }
+
+  @keyframes backgroundShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  &::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* animation: glitchEffect 3s infinite; */ /* Отключено для производительности */
+    opacity: 0.7;
+    z-index: -1;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 3.5em;
+    letter-spacing: 2px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2.8em;
+    letter-spacing: 1px;
+  }
 `;
 
 export const Emoji = styled.span`
   font-size: 2.7em;
   margin: 0 16px;
   user-select: none;
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff;
+  /* animation: neonPulse 2s ease-in-out infinite; */ /* Отключено для производительности */
 `;
 
 export const LowerCard = styled.div`
@@ -137,48 +236,32 @@ export const Button = styled.button`
   }
 `;
 
-export const SpinnerWrap = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 24px;
-`;
-
-export const Spinner = styled.div`
-  width: 28px;
-  height: 28px;
-  border: 4px solid #B8C1EC55;
-  border-top: 4px solid #232946;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #FFD70099;
-  animation: ${keyframes`
-    to { transform: rotate(360deg); }
-  `} 1s linear infinite;
-  margin: 0 0 0 6px;
-`;
-
-export const toastShow = keyframes`
-  0% { opacity: 0; transform: translateY(30px);}
-  10% { opacity: 1; transform: translateY(0);}
-  90% { opacity: 1; transform: translateY(0);}
-  100% { opacity: 0; transform: translateY(-30px);}
-`;
 export const Toast = styled.div`
   position: fixed;
   bottom: 30px;
   left: 30px;
   min-width: 220px;
-  background: rgba(255,255,255,0.18);
-  color: #FFD700 !important;
-  border: 2px solid #B8C1EC;
-  border-radius: 16px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #00ffff;
+  border: 2px solid #00ffff;
+  border-radius: 8px;
   padding: 14px 24px;
   font-size: 1.12em;
-  box-shadow: 0 4px 24px #23294633;
+  font-weight: 600;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
   z-index: 99999;
   animation: ${toastShow} 10s forwards;
   font-family: 'Montserrat', 'Quicksand', Arial, sans-serif;
   text-align: center;
+  text-shadow: 0 0 10px #00ffff;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: #ff00ff;
+    color: #ff00ff;
+    text-shadow: 0 0 15px #ff00ff;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+  }
 `;
 
 export const ProgressBarWrap = styled.div`

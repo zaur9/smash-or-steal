@@ -1,12 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 import HallOfFame from './HallOfFame';
-import { shortAddress } from '../utils/shortAddress';
 
 const HallOfFameContainer = styled.div`
   position: fixed;
-  top: 70px; /* Под кнопками */
-  left: 420px; /* Справа от лидербоарда */
+  top: 70px; /* Под кнопкой Hall of Fame */
+  left: 154px; /* Под второй кнопкой (Hall of Fame) */
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(15px);
   border-radius: 16px;
@@ -21,7 +20,7 @@ const HallOfFameContainer = styled.div`
   
   @media (max-width: 768px) {
     left: 10px;
-    top: 120px; /* Под лидербоардом на мобильных */
+    top: 120px; /* Под кнопками на мобильных */
     width: calc(100vw - 20px);
     max-width: 360px;
     padding: 16px;

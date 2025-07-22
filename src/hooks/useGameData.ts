@@ -21,7 +21,7 @@ export function useGameData(
   const [currentChance, setCurrentChance] = useState<number>(20);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const lastFetchRef = useRef<number>(0);
-  const cacheTimeoutMs = 10000; // Кэш на 10 секунд
+  const cacheTimeoutMs = 30000; // Увеличиваем кэш до 30 секунд
 
   const fetchData = async () => {
     if (
@@ -39,8 +39,8 @@ export function useGameData(
     // Проверяем кэш - если данные свежие, не делаем запрос
     const now = Date.now();
     if (hasLoadedOnce && (now - lastFetchRef.current) < cacheTimeoutMs) {
-      // Данные еще свежие, перезапускаем таймер
-      timerRef.current = setTimeout(fetchData, 30000);
+      // Данные еще свежие, перезапускаем таймер с большим интервалом
+      timerRef.current = setTimeout(fetchData, 60000); // Увеличиваем до 60 секунд
       return;
     }
 
@@ -81,11 +81,12 @@ export function useGameData(
       
       // Обновляем время последнего фетча
       lastFetchRef.current = now;
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('fetchData error:', e);
+      const error = e as { code?: string; message?: string };
       if (
-        e?.code === 'BAD_DATA' ||
-        (typeof e?.message === 'string' && e.message.includes('could not decode result data'))
+        error?.code === 'BAD_DATA' ||
+        (typeof error?.message === 'string' && error.message.includes('could not decode result data'))
       ) {
         setStatus('');
       } else {
@@ -95,8 +96,8 @@ export function useGameData(
       if (isInitializing) setIsInitializing(false);
       setIsFetching(false);
     }
-    // Увеличиваем интервал до 30 секунд для снижения нагрузки
-    timerRef.current = setTimeout(fetchData, 30000);
+    // Увеличиваем интервал до 60 секунд для снижения нагрузки
+    timerRef.current = setTimeout(fetchData, 60000);
   };
 
   useEffect(() => {

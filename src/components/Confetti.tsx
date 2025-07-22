@@ -10,7 +10,7 @@ interface ConfettiItemProps {
 }
 
 
-const StyledConfettiItem = ConfettiItem as React.ComponentType<any>;
+const StyledConfettiItem = ConfettiItem as React.ComponentType<ConfettiItemProps>;
 
 const confettiArray: ConfettiItemProps[] = Array.from({ length: 22 }, (_, i) => ({
   key: i,

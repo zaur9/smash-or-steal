@@ -2,7 +2,6 @@ export const CONTRACT_ADDRESS: string = "0x58C73e52Ed763FFF530eDB121E8da1886d484
 
 export const CONTRACT_ABI: string[] = [
   "function pool() view returns (uint256)",
-  "function smash() payable",
   "function steal() payable",
   "function lastWinner() view returns (address)",
   "function lastWinAmount() view returns (uint256)",
@@ -11,7 +10,6 @@ export const CONTRACT_ABI: string[] = [
   "function maxWinPercent() view returns (uint256)",
   "function getStats(address) view returns (uint256 numWins, uint256 totalWins, uint256 failStreak)",
   // Добавляем возможные события контракта
-  "event SmashAttempt(address indexed player, bool success, uint256 amount)",
   "event StealAttempt(address indexed player, bool success, uint256 amount)",
   "event Win(address indexed winner, uint256 amount)"
 ]; 

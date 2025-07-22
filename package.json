@@ -1,5 +1,5 @@
 {
-     "name": "smash-or-steal",
+     "name": "steal",
      "private": true,
      "version": "0.0.0",
      "type": "module",
@@ -46,6 +46,6 @@
           "ts-jest": "^29.1.2",
           "typescript": "^5.4.5",
           "typescript-eslint": "^7.8.0",
-          "vite": "^5.2.10"
+          "vite": "^7.0.5"
      }
 }

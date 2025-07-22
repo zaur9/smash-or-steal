@@ -6,13 +6,7 @@ interface ToastProps {
   type?: 'success' | 'error' | 'info';
 }
 
-const icons = {
-  success: '✅',
-  error: '❌',
-  info: 'ℹ️',
-};
-
-const Toast: React.FC<ToastProps> = ({ children, type = 'info' }) => (
+const Toast: React.FC<ToastProps> = ({ children }) => (
   <ToastStyled>
     {children}
   </ToastStyled>
