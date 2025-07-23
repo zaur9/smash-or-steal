@@ -1,0 +1,80 @@
+import { Theme } from '@rainbow-me/rainbowkit';
+
+export const cyberpunkTheme: Theme = {
+  blurs: {
+    modalOverlay: 'blur(4px)',
+  },
+  colors: {
+    accentColor: '#00ffff',
+    accentColorForeground: '#000000',
+    actionButtonBorder: '#00ffff',
+    actionButtonBorderMobile: '#00ffff',
+    actionButtonSecondaryBackground: 'rgba(0, 255, 255, 0.1)',
+    closeButton: '#888',
+    closeButtonBackground: 'rgba(0, 0, 0, 0.8)',
+    connectButtonBackground: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+    connectButtonBackgroundError: 'linear-gradient(135deg, #2e1a1a 0%, #3e1616 100%)',
+    connectButtonInnerBackground: 'transparent',
+    connectButtonText: '#00ffff',
+    connectButtonTextError: '#ff0066',
+    connectionIndicator: '#00ff00',
+    downloadBottomCardBackground: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+    downloadTopCardBackground: 'linear-gradient(135deg, #0a0a1e 0%, #0f1327 100%)',
+    error: '#ff0066',
+    generalBorder: '#00ffff',
+    generalBorderDim: 'rgba(0, 255, 255, 0.3)',
+    menuItemBackground: 'rgba(0, 255, 255, 0.05)',
+    modalBackdrop: 'rgba(0, 0, 0, 0.8)',
+    modalBackground: 'linear-gradient(135deg, #0a0a1e 0%, #1a1a2e 100%)',
+    modalBorder: '#00ffff',
+    modalText: '#ffffff',
+    modalTextDim: '#cccccc',
+    modalTextSecondary: '#aaaaaa',
+    profileAction: 'rgba(0, 255, 255, 0.1)',
+    profileActionHover: 'rgba(0, 255, 255, 0.2)',
+    profileForeground: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+    selectedOptionBorder: '#ff00ff',
+    standby: '#ffaa00',
+  },
+  fonts: {
+    body: '"Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  },
+  radii: {
+    actionButton: '8px',
+    connectButton: '8px',
+    menuButton: '8px',
+    modal: '16px',
+    modalMobile: '16px',
+  },
+  shadows: {
+    connectButton: '0 0 20px rgba(0, 255, 255, 0.3)',
+    dialog: '0 0 50px rgba(0, 255, 255, 0.2)',
+    profileDetailsAction: '0 2px 10px rgba(0, 0, 0, 0.3)',
+    selectedOption: '0 0 20px rgba(255, 0, 255, 0.4)',
+    selectedWallet: '0 0 20px rgba(0, 255, 255, 0.4)',
+    walletLogo: '0 0 10px rgba(0, 255, 255, 0.2)',
+  },
+};
+
+// Функция для создания кастомной темы с дополнительными CSS переменными
+export const createCyberpunkTheme = (): Theme => ({
+  ...cyberpunkTheme,
+  colors: {
+    ...cyberpunkTheme.colors,
+    // Дополнительные цвета для улучшенной стилизации
+    modalBackground: '#0f0f23',
+    modalBorder: '#00ffff',
+    modalText: '#ffffff',
+    modalTextDim: '#b3b3b3',
+    modalTextSecondary: '#888888',
+    accentColor: '#00ffff',
+    accentColorForeground: '#000011',
+    actionButtonBorder: '#00ffff',
+    connectButtonBackground: '#1a1a2e',
+    connectButtonText: '#00ffff',
+    generalBorder: '#00ffff',
+    generalBorderDim: 'rgba(0, 255, 255, 0.3)',
+    profileForeground: '#16213e',
+    selectedOptionBorder: '#ff00ff',
+  },
+});

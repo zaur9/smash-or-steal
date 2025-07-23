@@ -98,7 +98,6 @@ const NeonButton = styled.button`
     color: #ff00ff;
     text-shadow: 0 0 15px #ff00ff;
     background: rgba(255, 0, 255, 0.1);
-    transform: translateY(-2px);
     
     &::before {
       left: 100%;
@@ -106,7 +105,8 @@ const NeonButton = styled.button`
   }
 
   &:active {
-    transform: translateY(0);
+    border-color: #cc00cc;
+    background: rgba(255, 0, 255, 0.2);
   }
 
   &:disabled {

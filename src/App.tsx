@@ -46,6 +46,9 @@ const TopLeftButton = styled.button`
   transition: all 0.3s ease;
   text-shadow: 0 0 10px #00ffff;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  min-width: 150px; /* Увеличенная минимальная ширина для "Top Transactions" */
+  text-align: center;
+  white-space: nowrap;
   
   &:hover {
     background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
@@ -53,16 +56,18 @@ const TopLeftButton = styled.button`
     color: #ff00ff;
     text-shadow: 0 0 15px #ff00ff;
     box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
-    transform: translateY(-2px);
   }
   
   &:active {
-    transform: translateY(0);
+    background: linear-gradient(135deg, #0a2440 0%, #12182e 100%);
+    border-color: #cc00cc;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
   }
   
   @media (max-width: 768px) {
     padding: 10px 12px;
     font-size: 0.8em;
+    min-width: 130px; /* Увеличенная минимальная ширина для мобильных */
   }
 `;
 
@@ -128,7 +133,7 @@ const WalletDropdown = styled.div`
 // Для поддержки window.ethereum
 declare global {
   interface Window {
-    ethereum?: unknown;
+    ethereum?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 }
 

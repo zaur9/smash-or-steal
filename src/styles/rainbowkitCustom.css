@@ -1,0 +1,194 @@
+/* Кастомные стили для RainbowKit в стиле киберпанк игры */
+
+/* Переопределение базовых стилей модального окна */
+[data-rk] {
+  /* Основной контейнер модального окна */
+  .iekbcc0[data-rk] {
+    background: linear-gradient(135deg, #0a0a1e 0%, #1a1a2e 100%) !important;
+    border: 2px solid #00ffff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 0 50px rgba(0, 255, 255, 0.3), inset 0 0 30px rgba(0, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+
+  /* Заголовок модального окна */
+  .iekbcc0 h1[data-rk] {
+    color: #00ffff !important;
+    text-shadow: 0 0 10px #00ffff !important;
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 700 !important;
+  }
+
+  /* Кнопки кошельков */
+  ._1ckjpok0[data-rk] {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+    border: 2px solid rgba(0, 255, 255, 0.3) !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  ._1ckjpok0[data-rk]:hover {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%) !important;
+    border-color: #00ffff !important;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5) !important;
+    transform: translateY(-2px) !important;
+  }
+
+  /* Названия кошельков */
+  ._1ckjpok0 span[data-rk] {
+    color: #ffffff !important;
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 600 !important;
+  }
+
+  /* Кнопка "Get" для установки кошелька */
+  ._12cbo8i3[data-rk] {
+    background: linear-gradient(135deg, #ff00ff 0%, #cc00cc 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    text-shadow: 0 0 5px rgba(255, 0, 255, 0.8) !important;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.4) !important;
+  }
+
+  ._12cbo8i3[data-rk]:hover {
+    background: linear-gradient(135deg, #cc00cc 0%, #990099 100%) !important;
+    box-shadow: 0 0 25px rgba(255, 0, 255, 0.6) !important;
+  }
+
+  /* Кнопка закрытия */
+  ._1am14413[data-rk] {
+    background: rgba(0, 0, 0, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50% !important;
+    color: #ffffff !important;
+  }
+
+  ._1am14413[data-rk]:hover {
+    background: rgba(255, 0, 255, 0.2) !important;
+    border-color: #ff00ff !important;
+  }
+
+  /* Задний фон (backdrop) */
+  ._1vwt0cg0[data-rk] {
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(4px) !important;
+  }
+
+  /* Кнопка "Back" */
+  ._1ksauh40[data-rk] {
+    color: #00ffff !important;
+    font-family: 'Montserrat', sans-serif !important;
+  }
+
+  ._1ksauh40[data-rk]:hover {
+    color: #ff00ff !important;
+  }
+
+  /* Статус подключения */
+  ._1r5j1gg0[data-rk] {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(0, 255, 255, 0.05) 100%) !important;
+    border: 1px solid rgba(0, 255, 255, 0.3) !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+  }
+
+  /* Иконки кошельков */
+  ._1ckjpok0 img[data-rk] {
+    border-radius: 8px !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2) !important;
+  }
+
+  /* Текст "What is a wallet?" */
+  .g5kl0l0[data-rk] {
+    color: #cccccc !important;
+    font-family: 'Montserrat', sans-serif !important;
+  }
+
+  /* Кнопка "Learn More" */
+  ._1vwt0cg0 button[data-rk]:not(._1am14413):not(._12cbo8i3):not(._1ksauh40) {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(0, 255, 255, 0.05) 100%) !important;
+    border: 1px solid rgba(0, 255, 255, 0.3) !important;
+    border-radius: 8px !important;
+    color: #00ffff !important;
+    font-family: 'Montserrat', sans-serif !important;
+  }
+
+  ._1vwt0cg0 button[data-rk]:not(._1am14413):not(._12cbo8i3):not(._1ksauh40):hover {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.2) 0%, rgba(0, 255, 255, 0.1) 100%) !important;
+    border-color: #00ffff !important;
+  }
+
+  /* Индикатор загрузки */
+  ._1q2h2hk0[data-rk] circle {
+    stroke: #00ffff !important;
+  }
+
+  /* Сообщения об ошибках */
+  ._1ltbwl90[data-rk] {
+    background: linear-gradient(135deg, rgba(255, 0, 102, 0.1) 0%, rgba(255, 0, 102, 0.05) 100%) !important;
+    border: 1px solid rgba(255, 0, 102, 0.3) !important;
+    border-radius: 8px !important;
+    color: #ff0066 !important;
+  }
+
+  /* Анимация свечения для интерактивных элементов */
+  ._1ckjpok0[data-rk],
+  ._12cbo8i3[data-rk] {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  ._1ckjpok0[data-rk]::before,
+  ._12cbo8i3[data-rk]::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent) !important;
+    transition: left 0.5s ease !important;
+  }
+
+  ._1ckjpok0[data-rk]:hover::before {
+    left: 100% !important;
+  }
+
+  ._12cbo8i3[data-rk]::before {
+    background: linear-gradient(90deg, transparent, rgba(255, 0, 255, 0.3), transparent) !important;
+  }
+
+  ._12cbo8i3[data-rk]:hover::before {
+    left: 100% !important;
+  }
+}
+
+/* Дополнительные стили для темной темы */
+@media (prefers-color-scheme: dark) {
+  [data-rk] {
+    /* Усиление контрастности в темной теме */
+    .iekbcc0[data-rk] {
+      box-shadow: 0 0 50px rgba(0, 255, 255, 0.4), inset 0 0 30px rgba(0, 255, 255, 0.15) !important;
+    }
+  }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  [data-rk] {
+    .iekbcc0[data-rk] {
+      margin: 10px !important;
+      max-width: calc(100vw - 20px) !important;
+    }
+    
+    ._1ckjpok0[data-rk] {
+      padding: 12px !important;
+    }
+    
+    ._1ckjpok0 span[data-rk] {
+      font-size: 14px !important;
+    }
+  }
+}

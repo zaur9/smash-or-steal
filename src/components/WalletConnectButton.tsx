@@ -5,16 +5,35 @@ import styled from 'styled-components';
 const CyberpunkButton = styled.button`
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   border: 2px solid #00ffff;
-  border-radius: 8px;
+  border-radius: 12px;
   color: #00ffff;
   padding: 15px 30px;
   font-size: 1.1em;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   text-shadow: 0 0 10px #00ffff;
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
   font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(0, 255, 255, 0.2), 
+      transparent
+    );
+    transition: left 0.5s ease;
+  }
   
   &:hover {
     background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
@@ -22,16 +41,22 @@ const CyberpunkButton = styled.button`
     color: #ff00ff;
     text-shadow: 0 0 15px #ff00ff;
     box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
-    transform: translateY(-2px);
+  }
+  
+  &:hover::before {
+    left: 100%;
   }
   
   &:active {
-    transform: translateY(0);
+    background: linear-gradient(135deg, #0a2440 0%, #12182e 100%);
+    border-color: #cc00cc;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
   }
   
   @media (max-width: 600px) {
     padding: 12px 24px;
     font-size: 1em;
+    letter-spacing: 0.5px;
   }
 `;
 
