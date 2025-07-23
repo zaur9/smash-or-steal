@@ -172,7 +172,31 @@ const App: React.FC = () => {
   useEffect(() => {
     if (contract) {
       fetchData();
+      
+      // Добавляем слушатели событий для автоматического обновления
+      const handleStealAttempt = () => {
+        console.log('StealAttempt event detected, updating pool data...');
+        // Обновляем данные с небольшой задержкой для гарантии что блок обработан
+        setTimeout(() => fetchData(true), 2000);
+      };
+      
+      const handleWin = () => {
+        console.log('Win event detected, updating pool data...');
+        // Обновляем данные с небольшой задержкой для гарантии что блок обработан
+        setTimeout(() => fetchData(true), 2000);
+      };
+      
+      // Подписываемся на события контракта
+      contract.on('StealAttempt', handleStealAttempt);
+      contract.on('Win', handleWin);
+      
+      // Cleanup функция для отписки от событий
+      return () => {
+        contract.off('StealAttempt', handleStealAttempt);
+        contract.off('Win', handleWin);
+      };
     }
+    
     if (window.ethereum && typeof window.ethereum.on === 'function') {
       const handleChainChanged = () => {
         setStatus('');
@@ -210,7 +234,9 @@ const App: React.FC = () => {
       await tx.wait();
       setStatus("Steal attempt finished!");
       showToast("stealFinished", 'success');
-      await fetchData();
+      
+      // Принудительно обновляем данные после транзакции, игнорируя кэш
+      await fetchData(true);
       
       // Обновляем лидербоард только если это новая транзакция
       if (tx.hash !== lastTransactionHash) {

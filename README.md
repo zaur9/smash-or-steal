@@ -1,3 +1,5 @@
+# Steal
+
 ## Description
 
 A cyberpunk-styled web application for interacting with a smart contract on the **Somnia Testnet**. Users can "steal" the pool, participate in the Hall of Fame, and view transaction leaderboards.
@@ -15,8 +17,8 @@ A cyberpunk-styled web application for interacting with a smart contract on the 
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/steal.git
-   cd steal
+   git clone https://github.com/zaur9/smash-or-steal.git
+   cd smash-or-steal
    ```
 2. Install dependencies:
    ```sh

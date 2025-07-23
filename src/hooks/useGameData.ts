@@ -23,7 +23,7 @@ export function useGameData(
   const lastFetchRef = useRef<number>(0);
   const cacheTimeoutMs = 30000; // Увеличиваем кэш до 30 секунд
 
-  const fetchData = async () => {
+  const fetchData = async (forceUpdate = false) => {
     if (
       !contract ||
       !myAddress ||
@@ -36,11 +36,11 @@ export function useGameData(
       return;
     }
 
-    // Проверяем кэш - если данные свежие, не делаем запрос
+    // Проверяем кэш - если данные свежие, не делаем запрос (кроме случая принудительного обновления)
     const now = Date.now();
-    if (hasLoadedOnce && (now - lastFetchRef.current) < cacheTimeoutMs) {
+    if (!forceUpdate && hasLoadedOnce && (now - lastFetchRef.current) < cacheTimeoutMs) {
       // Данные еще свежие, перезапускаем таймер с большим интервалом
-      timerRef.current = setTimeout(fetchData, 60000); // Увеличиваем до 60 секунд
+      timerRef.current = setTimeout(() => fetchData(false), 60000); // Увеличиваем до 60 секунд
       return;
     }
 
@@ -97,12 +97,12 @@ export function useGameData(
       setIsFetching(false);
     }
     // Увеличиваем интервал до 60 секунд для снижения нагрузки
-    timerRef.current = setTimeout(fetchData, 60000);
+    timerRef.current = setTimeout(() => fetchData(false), 60000);
   };
 
   useEffect(() => {
     if (contract && myAddress) {
-      fetchData();
+      fetchData(false);
     }
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
