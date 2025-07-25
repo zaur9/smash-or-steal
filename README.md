@@ -2,13 +2,14 @@
 
 ## Description
 
-A cyberpunk-styled web application for interacting with a smart contract on the **Somnia Testnet**. Users can "steal" the pool, participate in the Hall of Fame, and view transaction leaderboards.
+A cyberpunk-styled web application for interacting with a smart contract on the **Somnia Testnet**. Users can "steal" the pool and participate in the Hall of Fame.
 
 ## Features
 
 - 🎯 **Steal the Pool** — attempt to steal the entire pool with calculated win chances
-- 🏆 **Hall of Fame** — view the greatest winners
-- 📊 **Top Transactions** — leaderboard of most active players  
+- 🏆 **Hall of Fame** — showcase of winners  
+- 🎵 **Background Music** — atmospheric cyberpunk soundtrack  
+- 📱 **Responsive Design** — works on desktop and mobile  
 - 🔗 **Wallet Integration** — connect with MetaMask via RainbowKit
 - 🎨 **Cyberpunk Design** — neon colors and futuristic interface
 - ⚡ **Optimized Performance** — minimal animations, efficient data fetching
@@ -54,14 +55,12 @@ npm test
 - **src/App.tsx** — main application component with wallet integration
 - **src/components/GameInterface.tsx** — main game interface with steal button
 - **src/components/StartScreen.tsx** — welcome screen with wallet connection
-- **src/components/TopLeftLeaderboard.tsx** — transaction leaderboard popup
 - **src/components/TopLeftHallOfFame.tsx** — hall of fame popup
 - **src/components/WalletConnectButton.tsx** — wallet connection component
 
 ### Hooks
 - **src/hooks/useGameData.ts** — contract interaction and game state management
 - **src/hooks/useWallet.ts** — wallet connection and network management
-- **src/hooks/useLeaderboard.ts** — leaderboard data management
 
 ### Services
 - **src/services/contractService.ts** — blockchain contract service
@@ -114,7 +113,7 @@ npm test
 - **What happens when I steal successfully?** — You win the entire pool amount
 - **What happens when I fail?** — Your transaction fee goes to the pool, increasing it for others
 - **How to get on Hall of Fame?** — Win big amounts to get listed among top winners
-- **Can I see other players' stats?** — Yes, check the "Top Transactions" leaderboard
+- **Can I see other players' stats?** — Yes, check the "Hall of Fame" to see winners
 
 ## Performance Optimizations
 

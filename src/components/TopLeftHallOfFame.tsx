@@ -5,22 +5,40 @@ import HallOfFame from './HallOfFame';
 const HallOfFameContainer = styled.div`
   position: fixed;
   top: 70px; /* Под кнопкой Hall of Fame */
-  left: 154px; /* Под второй кнопкой (Hall of Fame) */
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(15px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  left: 20px; /* Выравниваем с кнопкой */
+  background: transparent;
+  border: none;
+  border-radius: 0;
   padding: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  box-shadow: none;
   max-width: 400px;
   width: 380px;
   z-index: 999;
   max-height: 500px;
   overflow-y: auto;
+  direction: rtl; /* Перемещаем скроллбар влево */
+  
+  /* Простой кастомный скроллбар */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 255, 0.3);
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 255, 0.5);
+  }
   
   @media (max-width: 768px) {
     left: 10px;
-    top: 120px; /* Под кнопками на мобильных */
+    top: 80px; /* Под кнопкой на мобильных */
     width: calc(100vw - 20px);
     max-width: 360px;
     padding: 16px;
@@ -28,20 +46,23 @@ const HallOfFameContainer = styled.div`
 `;
 
 const Title = styled.h3`
-  color: #232946;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1.2em;
+  color: #00ffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1.4em;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   text-align: center;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 2px;
 `;
 
 const HallOfFameBlock = styled.div`
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  direction: ltr; /* Возвращаем нормальное направление текста */
 `;
 
 interface TopLeftHallOfFameProps {

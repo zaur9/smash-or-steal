@@ -5,8 +5,9 @@ import GameInterface from "./components/GameInterface";
 import StartScreen from "./components/StartScreen";
 import Toast from "./components/Toast";
 import Footer from "./components/Footer";
-import TopLeftLeaderboard from "./components/TopLeftLeaderboard";
 import TopLeftHallOfFame from "./components/TopLeftHallOfFame";
+import FailureNeonEffect from "./components/FailureNeonEffect";
+import SuccessNeonEffect from "./components/SuccessNeonEffect";
 import { useGameData } from './hooks/useGameData';
 import GlassGlobalStyle from './styles/GlassGlobalStyle';
 import {
@@ -143,9 +144,10 @@ const App: React.FC = () => {
   const [toastMsg, setToastMsg] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [showDisconnectMenu, setShowDisconnectMenu] = useState(false);
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showHallOfFame, setShowHallOfFame] = useState(false);
   const [lastTransactionHash, setLastTransactionHash] = useState<string | null>(null);
+  const [showFailureEffect, setShowFailureEffect] = useState(false);
+  const [showSuccessEffect, setShowSuccessEffect] = useState(false);
   const disconnectMenuRef = useRef<HTMLDivElement | null>(null);
 
   const showToast = (msgKey: string, type: 'success' | 'error' | 'info' = 'info') => {
@@ -178,27 +180,45 @@ const App: React.FC = () => {
     if (contract) {
       fetchData();
       
+      console.log('Setting up contract event listeners...', { contract: contract.address, myAddress });
+      
       // Добавляем слушатели событий для автоматического обновления
-      const handleStealAttempt = () => {
-        console.log('StealAttempt event detected, updating pool data...');
-        // Обновляем данные с небольшой задержкой для гарантии что блок обработан
+      const handleStealAttempt = (user: string, amount: bigint, success: boolean, poolAmount: bigint, chance: bigint) => {
+        console.log('StealAttempt event:', { user, amount: ethers.formatEther(amount), success, pool: ethers.formatEther(poolAmount), chance: chance.toString() });
+        
+        // Если это наш адрес и попытка неудачная - показываем эффект
+        if (myAddress && user.toLowerCase() === myAddress.toLowerCase() && !success) {
+          console.log('Our steal attempt FAILED - showing failure effect');
+          setShowFailureEffect(true);
+        }
+        
         setTimeout(() => fetchData(true), 2000);
       };
       
-      const handleWin = () => {
-        console.log('Win event detected, updating pool data...');
-        // Обновляем данные с небольшой задержкой для гарантии что блок обработан
+      const handleWinner = (user: string, amount: bigint, blockNumber: bigint) => {
+        console.log('Winner event:', { user, amount: ethers.formatEther(amount), blockNumber: blockNumber.toString() });
         setTimeout(() => fetchData(true), 2000);
       };
       
       // Подписываемся на события контракта
-      contract.on('StealAttempt', handleStealAttempt);
-      contract.on('Win', handleWin);
+      try {
+        contract.on('StealAttempt', handleStealAttempt);
+        contract.on('Winner', handleWinner);
+        console.log('Event listeners attached successfully');
+        
+        // Добавляем слушатель на ВСЕ события для отладки
+        contract.on('*', (...args: any[]) => {
+          console.log('ANY CONTRACT EVENT:', args);
+        });
+      } catch (error) {
+        console.error('Error attaching event listeners:', error);
+      }
       
       // Cleanup функция для отписки от событий
       return () => {
         contract.off('StealAttempt', handleStealAttempt);
-        contract.off('Win', handleWin);
+        contract.off('Winner', handleWinner);
+        contract.removeAllListeners('*');
       };
     }
     
@@ -216,7 +236,7 @@ const App: React.FC = () => {
       };
     }
 
-    }, [contract, fetchData, setStatus, setNetworkWarning]);
+    }, [contract, fetchData, setStatus, setNetworkWarning, myAddress]);
 
   useEffect(() => {
     if (!showDisconnectMenu) return;
@@ -233,25 +253,73 @@ const App: React.FC = () => {
     if (!contract) return;
     setIsActionLoading(true);
     setStatus("Trying to Steal...");
+    
+    // Полностью сбрасываем эффект неудачи в начале каждой попытки
+    setShowFailureEffect(false);
+    
     try {
+      console.log('Starting steal transaction...');
       const tx = await contract.steal({ value: ethers.parseEther("0.01") });
+      console.log('Transaction sent:', tx.hash);
+      
       showToast("stealTry", 'info');
-      await tx.wait();
-      setStatus("Steal attempt finished!");
+      
+      // Слушаем события этой конкретной транзакции
+      const receipt = await tx.wait();
+      console.log('Transaction mined:', receipt);
+      console.log('Transaction logs:', receipt.logs);
+      
+      // Небольшая пауза для полной очистки состояния
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Парсим логи транзакции
+        for (const log of receipt.logs) {
+          try {
+            const parsed = contract.interface.parseLog(log);
+            console.log('Parsed log:', parsed);
+            
+            if (parsed && parsed.name === 'StealAttempt') {
+              const [user, , success] = parsed.args;
+              console.log('StealAttempt event:', { user, success, myAddress });
+              
+              if (user.toLowerCase() === myAddress.toLowerCase()) {
+                if (!success) {
+                  console.log('User failed to steal, showing failure effect');
+                  // Показываем эффект неудачи
+                  setShowFailureEffect(true);
+                  
+                  // Через 2 секунды автоматически скрываем эффект
+                  setTimeout(() => {
+                    console.log('Auto-hiding failure effect after 2 seconds');
+                    setShowFailureEffect(false);
+                  }, 2000);
+                } else {
+                  console.log('User successfully stole the pool, showing success effect');
+                  // Показываем эффект успеха
+                  setShowSuccessEffect(true);
+                  
+                  // Через 2 секунды автоматически скрываем эффект
+                  setTimeout(() => {
+                    console.log('Auto-hiding success effect after 2 seconds');
+                    setShowSuccessEffect(false);
+                  }, 2000);
+                }
+              }
+            }
+          } catch (error) {
+            console.log('Could not parse log:', log);
+          }
+        }      setStatus("Steal attempt finished!");
       showToast("stealFinished", 'success');
       
-      // Принудительно обновляем данные после транзакции, игнорируя кэш
+      // Принудительно обновляем данные после транзакции
       await fetchData(true);
       
       // Обновляем лидербоард только если это новая транзакция
       if (tx.hash !== lastTransactionHash) {
         setLastTransactionHash(tx.hash);
-        // Простой лидербоард не нуждается в принудительном обновлении
       }
       
-      if (myAddress && lastWinner && myAddress.toLowerCase() === lastWinner.toLowerCase()) {
-        // Winner animation could be handled here
-      }
     } catch (e: unknown) {
       const errorObj = e as { code?: number; message?: string };
       const msg = typeof errorObj?.message === 'string' ? errorObj.message.toLowerCase() : '';
@@ -330,26 +398,11 @@ const App: React.FC = () => {
       {walletConnected && (
         <TopLeftButtonsContainer>
           <TopLeftButton onClick={() => {
-            setShowLeaderboard(v => !v);
-            if (!showLeaderboard) setShowHallOfFame(false); // Закрыть Hall of Fame при открытии Leaderboard
-          }}>
-            {showLeaderboard ? 'Close' : 'Top Transactions'}
-          </TopLeftButton>
-          <TopLeftButton onClick={() => {
             setShowHallOfFame(v => !v);
-            if (!showHallOfFame) setShowLeaderboard(false); // Закрыть Leaderboard при открытии Hall of Fame
           }}>
             {showHallOfFame ? 'Close' : 'Hall of Fame'}
           </TopLeftButton>
         </TopLeftButtonsContainer>
-      )}
-
-      {/* Отображение лидербоарда */}
-      {walletConnected && hasLoadedOnce && showLeaderboard && (
-        <TopLeftLeaderboard 
-          contract={contract} 
-          currentPlayerAddress={myAddress}
-        />
       )}
 
       {/* Отображение Hall of Fame */}
@@ -359,6 +412,16 @@ const App: React.FC = () => {
           myAddress={myAddress}
         />
       )}
+
+      {/* Эффект красного неона при неудачной попытке */}
+      <FailureNeonEffect 
+        isActive={showFailureEffect}
+      />
+
+      {/* Эффект зеленого неона при успешной попытке */}
+      <SuccessNeonEffect 
+        isActive={showSuccessEffect}
+      />
     </>
   );
 };

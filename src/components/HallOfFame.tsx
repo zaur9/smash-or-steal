@@ -1,9 +1,80 @@
 import React from 'react';
+import styled from 'styled-components';
 
 interface HallOfFameProps {
   hallOfFame: string[];
   myAddress?: string;
 }
+
+const Container = styled.div`
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  height: 100%;
+  overflow-y: auto;
+`;
+
+const EmptyMessage = styled.div`
+  text-align: center;
+  color: #00ffff;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.1em;
+  margin-top: 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+`;
+
+const PlayerList = styled.ol`
+  padding-left: 0;
+  margin: 0;
+  list-style: none;
+  counter-reset: rank;
+`;
+
+const PlayerItem = styled.li<{ isFirst: boolean; isMe: boolean }>`
+  color: ${props => props.isMe ? '#ff00ff' : '#00ffff'};
+  font-weight: 700;
+  font-size: ${props => props.isFirst ? '1.2em' : '1em'};
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  word-break: break-all;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid ${props => props.isFirst ? '#ffd700' : 'rgba(0, 255, 255, 0.3)'};
+  border-radius: 6px;
+  position: relative;
+  transition: all 0.2s ease;
+  counter-increment: rank;
+  
+  &::before {
+    content: counter(rank);
+    color: ${props => props.isFirst ? '#ffd700' : '#00ffff'};
+    font-weight: 900;
+    font-size: 0.9em;
+    min-width: 20px;
+    text-align: center;
+  }
+  
+  &:hover {
+    background: rgba(0, 255, 255, 0.1);
+  }
+`;
+
+const Crown = styled.span`
+  font-size: 1.2em;
+`;
+
+const YouLabel = styled.span`
+  font-size: 0.9em;
+  color: #ff00ff;
+  margin-left: 4px;
+  font-weight: 600;
+`;
 
 function shortAddress(addr: string) {
   if (!addr) return '';
@@ -12,66 +83,29 @@ function shortAddress(addr: string) {
 
 const HallOfFame: React.FC<HallOfFameProps> = ({ hallOfFame, myAddress }) => {
   return (
-    <div style={{
-      margin: '12px 0',
-      padding: 12,
-      background: 'rgba(255,255,255,0.18)',
-      borderRadius: 20,
-      boxShadow: '0 2px 12px #FFD70033',
-      border: '2px solid #FFD700',
-      height: '100%',
-      overflowY: 'auto',
-      backdropFilter: 'blur(8px)',
-    }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: 10,
-        }}
-      >
-
-        <span
-          style={{
-            fontWeight: 700,
-            fontSize: '1.10em',
-            color: '#232946',
-            background: 'none',
-            letterSpacing: '.03em',
-            userSelect: 'none',
-            textShadow: '0 2px 8px #fff3, 0 1px 0 #23294633',
-          }}
-        >
-          Hall of Fame
-        </span>
-      </div>
+    <Container>
       {(!hallOfFame || hallOfFame.length === 0) ? (
-        <div style={{textAlign:'center', color:'#232946', fontStyle:'italic', fontWeight:500, fontSize:'1.05em', marginTop:12}}>
+        <EmptyMessage>
           Be the first to win
-        </div>
+        </EmptyMessage>
       ) : (
-        <ol style={{ paddingLeft: 18, margin: 0 }}>
+        <PlayerList>
           {hallOfFame.map((address, idx) => (
-            <li key={address + idx} style={{
-              color: '#18122B',
-              fontWeight: 700,
-              fontSize: idx === 0 ? '1.13em' : '1em',
-              wordBreak: 'break-all',
-              marginBottom: 4,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              textShadow: '0 2px 8px #fff3, 0 1px 0 #23294633',
-            }}>
-              {idx === 0 && <span style={{fontSize:'1.1em', color:'#232946'}}>🥇</span>}
-              {shortAddress(address)}
-              {myAddress && address.toLowerCase() === myAddress.toLowerCase() && <span style={{fontSize:'0.95em', color:'#232946', marginLeft:2}}>(You)</span>}
-            </li>
+            <PlayerItem 
+              key={address + idx} 
+              isFirst={idx === 0}
+              isMe={myAddress ? address.toLowerCase() === myAddress.toLowerCase() : false}
+            >
+              {idx === 0 && <Crown>👑</Crown>}
+              <span>{shortAddress(address)}</span>
+              {myAddress && address.toLowerCase() === myAddress.toLowerCase() && 
+                <YouLabel>(You)</YouLabel>
+              }
+            </PlayerItem>
           ))}
-        </ol>
+        </PlayerList>
       )}
-    </div>
+    </Container>
   );
 };
 
